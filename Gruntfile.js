@@ -78,14 +78,13 @@ module.exports = function(grunt) {
             }
         },
 
-        less: {
-            transpile: {
+        sass: {
+            dist: {
+                options: {
+                    style: 'expanded'
+                },
                 files: {
-                    'build/<%= pkg.name %>.css': [
-                        'client/styles/reset.css',
-                        'client/requires/*/css/*',
-                        'client/styles/less/main.less'
-                    ]
+                    'build/<%= pkg.name %>.css': 'client/styles/sass/main.scss'
                 }
             }
         },
@@ -143,9 +142,9 @@ module.exports = function(grunt) {
                 files: ['client/templates/*.hbs', 'client/src/**/*.js'],
                 tasks: ['clean:dev', 'browserify:app', 'concat', 'copy:dev']
             },
-            less: {
-                files: ['client/styles/**/*.less'],
-                tasks: ['less:transpile', 'copy:dev']
+            sass: {
+                files: ['client/styles/sass/main.scss'],
+                tasks: ['sass:dist', 'copy:dev']
             },
             test: {
                 files: ['build/app.js', 'client/spec/**/*.test.js'],
@@ -198,7 +197,7 @@ module.exports = function(grunt) {
 
         concurrent: {
             dev: {
-                tasks: ['nodemon:dev', 'shell:mongo', 'watch:scripts', 'watch:less', 'watch:test'],
+                tasks: ['nodemon:dev', 'shell:mongo', 'watch:scripts', 'watch:sass', 'watch:test'],
                 options: {
                     logConcurrentOutput: true
                 }
@@ -234,8 +233,8 @@ module.exports = function(grunt) {
 
     grunt.registerTask('init:dev', ['clean', 'bower', 'browserify:vendor']);
 
-    grunt.registerTask('build:dev', ['clean:dev', 'browserify:app', 'browserify:test', 'jshint:dev', 'less:transpile', 'concat', 'copy:dev']);
-    grunt.registerTask('build:prod', ['clean:prod', 'browserify:vendor', 'browserify:app', 'jshint:all', 'less:transpile', 'concat', 'cssmin', 'uglify', 'copy:prod']);
+    grunt.registerTask('build:dev', ['clean:dev', 'browserify:app', 'browserify:test', 'jshint:dev', 'sass:dist', 'concat', 'copy:dev']);
+    grunt.registerTask('build:prod', ['clean:prod', 'browserify:vendor', 'browserify:app', 'jshint:all', 'sass:dist', 'concat', 'cssmin', 'uglify', 'copy:prod']);
 
     grunt.registerTask('heroku', ['init:dev', 'build:dev']);
 
